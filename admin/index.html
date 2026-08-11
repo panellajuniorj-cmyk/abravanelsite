@@ -1,6 +1,4 @@
-from pathlib import Path
-
-html = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
   <meta charset="UTF-8">
@@ -191,10 +189,18 @@ html = r'''<!DOCTYPE html>
             </p>
           </div>
 
-          <button id="btnDeploy" onclick="deployToGithub()"
-            class="bg-abravanel-green hover:bg-abravanel-greenHover text-black font-black font-mono text-xs px-5 py-3 rounded-lg glow-btn flex items-center gap-2">
-            <span>PUBLICAR</span>
-          </button>
+          <div class="flex flex-wrap gap-2">
+            <button id="btnDebug" onclick="runSmartDebug()"
+              class="bg-[#0f1f17] hover:bg-[#173226] text-abravanel-green border border-abravanel-border font-black font-mono text-xs px-4 py-3 rounded-lg flex items-center gap-2">
+              <i class="fa-solid fa-stethoscope"></i>
+              <span>DIAGNOSTICAR TOKEN</span>
+            </button>
+
+            <button id="btnDeploy" onclick="deployToGithub()"
+              class="bg-abravanel-green hover:bg-abravanel-greenHover text-black font-black font-mono text-xs px-5 py-3 rounded-lg glow-btn flex items-center gap-2">
+              <span>PUBLICAR</span>
+            </button>
+          </div>
         </div>
 
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -219,6 +225,35 @@ html = r'''<!DOCTYPE html>
               class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-3 text-xs font-mono outline-none focus:border-abravanel-green">
           </div>
 
+        </div>
+      </section>
+
+
+      <section class="bg-abravanel-panel border border-abravanel-border rounded-2xl overflow-hidden glow-box">
+        <div class="px-6 py-3 bg-black/40 border-b border-abravanel-border">
+          <span class="font-mono text-xs font-bold">SMART DEBUG</span>
+        </div>
+
+        <div class="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-[10px] font-mono">
+          <div class="bg-[#020605] border border-abravanel-border rounded-lg p-3">
+            <div class="text-abravanel-muted">TOKEN</div>
+            <div id="dbgToken" class="mt-1 text-white">NÃO TESTADO</div>
+          </div>
+
+          <div class="bg-[#020605] border border-abravanel-border rounded-lg p-3">
+            <div class="text-abravanel-muted">USUÁRIO AUTENTICADO</div>
+            <div id="dbgUser" class="mt-1 text-white">—</div>
+          </div>
+
+          <div class="bg-[#020605] border border-abravanel-border rounded-lg p-3">
+            <div class="text-abravanel-muted">ACESSO AO REPO</div>
+            <div id="dbgRepo" class="mt-1 text-white">—</div>
+          </div>
+
+          <div class="bg-[#020605] border border-abravanel-border rounded-lg p-3">
+            <div class="text-abravanel-muted">DIAGNÓSTICO</div>
+            <div id="dbgDiagnosis" class="mt-1 text-white">—</div>
+          </div>
         </div>
       </section>
 
@@ -354,6 +389,297 @@ html = r'''<!DOCTYPE html>
       return scriptText;
     }
 
+
+    function githubHeaders(token) {
+      return {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2026-03-10",
+        "Content-Type": "application/json"
+      };
+    }
+
+    function getInterestingHeaders(response) {
+      const names = [
+        "x-accepted-github-permissions",
+        "x-oauth-scopes",
+        "x-accepted-oauth-scopes",
+        "github-authentication-token-expiration",
+        "x-ratelimit-limit",
+        "x-ratelimit-remaining",
+        "x-ratelimit-reset",
+        "x-github-request-id"
+      ];
+
+      const out = {};
+
+      for (const name of names) {
+        const value = response.headers.get(name);
+        if (value) out[name] = value;
+      }
+
+      return out;
+    }
+
+    function logResponseHeaders(label, response) {
+      const headers = getInterestingHeaders(response);
+
+      if (Object.keys(headers).length === 0) {
+        logTerminal("DEBUG", `${label}: nenhum header de diagnóstico exposto pelo navegador.`);
+        return;
+      }
+
+      for (const [name, value] of Object.entries(headers)) {
+        logTerminal("DEBUG", `${label} ${name}: ${value}`);
+      }
+    }
+
+    function setDebug(id, value, state = "normal") {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      el.textContent = value;
+
+      el.classList.remove(
+        "text-white",
+        "text-abravanel-green",
+        "text-abravanel-danger",
+        "text-abravanel-warning"
+      );
+
+      if (state === "ok") el.classList.add("text-abravanel-green");
+      else if (state === "error") el.classList.add("text-abravanel-danger");
+      else if (state === "warn") el.classList.add("text-abravanel-warning");
+      else el.classList.add("text-white");
+    }
+
+    async function githubRequest(url, options = {}) {
+      const response = await fetch(url, options);
+      return response;
+    }
+
+    async function readJsonOrText(response) {
+      const text = await response.text();
+
+      if (!text) return { raw: "", data: null };
+
+      try {
+        return {
+          raw: text,
+          data: JSON.parse(text)
+        };
+      } catch {
+        return {
+          raw: text,
+          data: null
+        };
+      }
+    }
+
+    async function runSmartDebug() {
+      const token = document.getElementById("gh_token").value.trim();
+      const repo = document.getElementById("gh_repo").value.trim();
+      const path = document.getElementById("gh_path").value.trim();
+      const btn = document.getElementById("btnDebug");
+
+      if (!token) {
+        logTerminal("ERROR", "Cole o token no campo GitHub Token antes do diagnóstico.");
+        setDebug("dbgToken", "AUSENTE", "error");
+        return;
+      }
+
+      if (!repo || !repo.includes("/")) {
+        logTerminal("ERROR", "Repositório inválido. Use owner/repo.");
+        setDebug("dbgRepo", "OWNER/REPO INVÁLIDO", "error");
+        return;
+      }
+
+      const [owner] = repo.split("/");
+      const headers = githubHeaders(token);
+      const original = btn.innerHTML;
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="loader"></span><span>DIAGNOSTICANDO...</span>`;
+
+      setDebug("dbgToken", "TESTANDO...", "warn");
+      setDebug("dbgUser", "—");
+      setDebug("dbgRepo", "—");
+      setDebug("dbgDiagnosis", "ANALISANDO...", "warn");
+
+      logTerminal("DEBUG", "===== INÍCIO DO SMART DEBUG =====");
+      logTerminal("DEBUG", `Destino: ${repo}/${path}`);
+
+      try {
+        // 1) TOKEN: /user cannot fall back to anonymous access.
+        logTerminal("DEBUG", "1/4 Verificando autenticação real do token em /user...");
+
+        const userRes = await githubRequest(
+          "https://api.github.com/user",
+          {
+            method: "GET",
+            headers
+          }
+        );
+
+        logResponseHeaders("USER", userRes);
+
+        const userBody = await readJsonOrText(userRes.clone());
+
+        if (!userRes.ok) {
+          setDebug("dbgToken", `FALHOU HTTP ${userRes.status}`, "error");
+          setDebug("dbgDiagnosis", "TOKEN INVÁLIDO/SEM AUTENTICAÇÃO", "error");
+
+          throw new Error(
+            `Token não autenticou em /user: HTTP ${userRes.status} | ${userBody.raw}`
+          );
+        }
+
+        const login = userBody.data?.login || "(login não retornado)";
+        setDebug("dbgToken", "AUTENTICADO", "ok");
+        setDebug("dbgUser", login, "ok");
+
+        logTerminal("SUCCESS", `Token autenticado como: ${login}`);
+
+        if (login.toLowerCase() !== owner.toLowerCase()) {
+          logTerminal(
+            "WARN",
+            `O token autenticou como [${login}], mas o owner do repositório é [${owner}].`
+          );
+        } else {
+          logTerminal("SUCCESS", "Usuário autenticado corresponde ao owner informado.");
+        }
+
+        // 2) REPOSITORY METADATA
+        logTerminal("DEBUG", "2/4 Verificando acesso autenticado ao repositório...");
+
+        const repoRes = await githubRequest(
+          `https://api.github.com/repos/${repo}`,
+          {
+            method: "GET",
+            headers
+          }
+        );
+
+        logResponseHeaders("REPO", repoRes);
+
+        const repoBody = await readJsonOrText(repoRes.clone());
+
+        if (!repoRes.ok) {
+          setDebug("dbgRepo", `HTTP ${repoRes.status}`, "error");
+          setDebug("dbgDiagnosis", "TOKEN NÃO ACESSA O REPOSITÓRIO", "error");
+
+          throw new Error(
+            `Falha ao consultar repo autenticado: HTTP ${repoRes.status} | ${repoBody.raw}`
+          );
+        }
+
+        const repoData = repoBody.data || {};
+        const permissions = repoData.permissions || {};
+
+        setDebug(
+          "dbgRepo",
+          `${repoData.full_name || repo} | branch=${repoData.default_branch || "?"}`,
+          "ok"
+        );
+
+        logTerminal(
+          "DEBUG",
+          `Repo: private=${!!repoData.private}, archived=${!!repoData.archived}, disabled=${!!repoData.disabled}, default_branch=${repoData.default_branch || "?"}`
+        );
+
+        if (Object.keys(permissions).length) {
+          logTerminal(
+            "DEBUG",
+            `Permissões do usuário no repo: ${JSON.stringify(permissions)}`
+          );
+
+          if (permissions.push === false) {
+            logTerminal(
+              "WARN",
+              "A API informou permissions.push=false. Este usuário/token não consegue fazer push nesse repositório."
+            );
+          }
+
+          if (permissions.push === true) {
+            logTerminal(
+              "SUCCESS",
+              "A API informou permissions.push=true."
+            );
+          }
+        } else {
+          logTerminal(
+            "WARN",
+            "A resposta do repositório não trouxe o objeto permissions. Isso pode limitar o diagnóstico."
+          );
+        }
+
+        // 3) CONTENTS GET
+        logTerminal("DEBUG", "3/4 Verificando leitura autenticada do arquivo...");
+
+        const contentUrl =
+          `https://api.github.com/repos/${repo}/contents/${path}?ref=${encodeURIComponent(repoData.default_branch || "main")}`;
+
+        const contentRes = await githubRequest(
+          contentUrl,
+          {
+            method: "GET",
+            headers
+          }
+        );
+
+        logResponseHeaders("CONTENTS-GET", contentRes);
+
+        const contentBody = await readJsonOrText(contentRes.clone());
+
+        if (!contentRes.ok) {
+          setDebug("dbgDiagnosis", "ARQUIVO NÃO ACESSÍVEL", "error");
+
+          throw new Error(
+            `GET contents falhou: HTTP ${contentRes.status} | ${contentBody.raw}`
+          );
+        }
+
+        logTerminal(
+          "SUCCESS",
+          `Arquivo lido: sha=${contentBody.data?.sha || "?"}, size=${contentBody.data?.size ?? "?"}`
+        );
+
+        // 4) CONCLUSION
+        logTerminal("DEBUG", "4/4 Analisando provável causa do 403 de escrita...");
+
+        let diagnosis = "TOKEN AUTENTICADO; VERIFICAR CONTENTS:WRITE";
+
+        if (login.toLowerCase() !== owner.toLowerCase()) {
+          diagnosis = "TOKEN É DE OUTRO USUÁRIO/OWNER";
+          setDebug("dbgDiagnosis", diagnosis, "warn");
+        } else if (permissions.push === false) {
+          diagnosis = "SEM PERMISSÃO DE PUSH";
+          setDebug("dbgDiagnosis", diagnosis, "error");
+        } else {
+          setDebug("dbgDiagnosis", diagnosis, "warn");
+        }
+
+        logTerminal(
+          "WARN",
+          "O GET de conteúdo NÃO confirma Contents:write em repositório público. O teste decisivo é o PUT e o header x-accepted-github-permissions."
+        );
+
+        logTerminal(
+          "DEBUG",
+          "Se o PUT retornar 'Resource not accessible by personal access token', confira no token: Resource owner correto + repositório selecionado + Repository permissions > Contents = Read and write."
+        );
+
+        logTerminal("SUCCESS", "Smart Debug concluído sem modificar arquivos.");
+
+      } catch (error) {
+        logTerminal("ERROR", error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+        logTerminal("DEBUG", "===== FIM DO SMART DEBUG =====");
+      }
+    }
+
     async function deployToGithub() {
       const token = document.getElementById("gh_token").value.trim();
       const repo = document.getElementById("gh_repo").value.trim();
@@ -391,12 +717,7 @@ html = r'''<!DOCTYPE html>
       const apiUrl =
         `https://api.github.com/repos/${repo}/contents/${path}`;
 
-      const headers = {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Content-Type": "application/json"
-      };
+      const headers = githubHeaders(token);
 
       try {
         logTerminal("API", `GET ${repo}/${path}`);
@@ -405,6 +726,8 @@ html = r'''<!DOCTYPE html>
           method: "GET",
           headers
         });
+
+        logResponseHeaders("DEPLOY-GET", getRes);
 
         if (!getRes.ok) {
           const body = await getRes.text();
@@ -495,6 +818,8 @@ html = r'''<!DOCTYPE html>
           })
         });
 
+        logResponseHeaders("DEPLOY-PUT", putRes);
+
         const acceptedPermissions =
           putRes.headers.get(
             "x-accepted-github-permissions"
@@ -503,7 +828,7 @@ html = r'''<!DOCTYPE html>
         if (acceptedPermissions) {
           logTerminal(
             "DEBUG",
-            `GitHub permissions: ${acceptedPermissions}`
+            `GitHub exige/aceita: ${acceptedPermissions}`
           );
         }
 
@@ -585,8 +910,3 @@ html = r'''<!DOCTYPE html>
 
 </body>
 </html>
-'''
-
-out = Path("/mnt/data/admin_index_github_completo.html")
-out.write_text(html, encoding="utf-8")
-print(f"Criado: {out}")
