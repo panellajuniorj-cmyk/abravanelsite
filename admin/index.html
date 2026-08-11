@@ -457,23 +457,68 @@
         let changesApplied = 0;
         
         for (const [key, value] of Object.entries(updates)) {
-          // Find all elements with data-admin-field matching the key
-          const elements = doc.querySelectorAll(`[data-admin-field="${key}"]`);
-          if (elements.length > 0) {
-            elements.forEach(el => {
-              if (el.tagName.toLowerCase() === 'img') {
-                el.src = value;
-              } else {
-                el.textContent = value;
-              }
-              changesApplied++;
-            });
-            logTerminal("INJECT", `[${key}] injetado com sucesso em ${elements.length} elemento(s).`);
-          } else {
-            logTerminal("WARN", `Campo [${key}] ignorado: seletor não encontrado no HTML de destino.`);
-          }
-        }
 
+  if (key === "productTitle") {
+
+    const scripts = Array.from(
+      doc.querySelectorAll("script")
+    );
+
+    const appScript = scripts.find(script =>
+      script.textContent.includes("let appState =")
+    );
+
+    if (!appScript) {
+
+      logTerminal(
+        "WARN",
+        "Objeto appState não encontrado."
+      );
+
+      continue;
+    }
+
+    const escapedValue =
+      JSON.stringify(value);
+
+    const original =
+      appScript.textContent;
+
+    const updated =
+      original.replace(
+        /title:\s*["'][^"']*["']/,
+        `title: ${escapedValue}`
+      );
+
+    if (updated !== original) {
+
+      appScript.textContent =
+        updated;
+
+      changesApplied++;
+
+      logTerminal(
+        "INJECT",
+        `[productTitle] atualizado no appState.`
+      );
+
+    } else {
+
+      logTerminal(
+        "WARN",
+        "Campo title não encontrado dentro do appState."
+      );
+    }
+
+    continue;
+  }
+
+
+  logTerminal(
+    "WARN",
+    `Campo [${key}] ainda não configurado.`
+  );
+}
         // 3. Update the publish timestamp automatically
         const timeElements = doc.querySelectorAll(`[data-admin-field="publishTime"]`);
         if (timeElements.length > 0) {
