@@ -1152,31 +1152,9 @@
           deliveryRegion;
       }
 
-      if (copyCode) {
-        const normalizedCode =
-          copyCode.replace(/\s+/g, "");
-
-        const looksLikePixPayload =
-          /^000201/i.test(normalizedCode) ||
-          /br\.gov\.bcb\.pix/i.test(normalizedCode);
-
-        if (looksLikePixPayload) {
-          showToast(
-            "Use apenas um código genérico de demonstração."
-          );
-
-          logTerminal(
-            "ERROR",
-            "Código rejeitado: payload Pix real não é permitido neste modo de demonstração."
-          );
-
-          return;
-        }
-
-        updates.copyCode =
-          copyCode;
+   if (copyCode) {
+        updates.copyCode = copyCode;
       }
-
       if (
         Object.keys(updates).length === 0
       ) {
