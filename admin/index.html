@@ -239,15 +239,15 @@
 
           <div class="bg-abravanel-card border border-abravanel-border rounded-xl p-4 space-y-4 lg:col-span-1 md:col-span-2">
             <div class="flex justify-between items-center text-xs font-mono border-b border-abravanel-border pb-2">
-              <span class="text-white font-bold">VENDEDOR & PAGAMENTO PIX</span>
+              <span class="text-white font-bold">VENDEDOR & CÓDIGO</span>
             </div>
             <div>
               <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Nome do Vendedor</label>
               <input id="patch_sidebarSellerName" placeholder="Ex: Carlos Eduardo" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
             </div>
             <div>
-              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Código Pix Copia e Cola</label>
-              <textarea id="patch_copyCode" placeholder="Ex: 00020126580014br.gov.bcb.pix..." class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none resize-none h-20"></textarea>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Código de Referência</label>
+              <textarea id="patch_copyCode" placeholder="Ex: CODIGO-REFERENCIA-001" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none resize-none h-20"></textarea>
             </div>
           </div>
 
@@ -434,7 +434,8 @@
       const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
       const headers = {
         "Authorization": `Bearer ${token}`,
-        "Accept": "application/vnd.github.v3+json",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
         "Content-Type": "application/json"
       };
 
@@ -442,7 +443,19 @@
         // 1. Fetch current file
         logTerminal("API", `Baixando código fonte atual de /${path}...`);
         const getRes = await fetch(apiUrl, { headers, method: "GET" });
-        if (!getRes.ok) throw new Error(`Falha ao obter arquivo: ${getRes.status} ${getRes.statusText}`);
+
+        if (!getRes.ok) {
+          const getErrorBody = await getRes.text();
+
+          logTerminal(
+            "ERROR",
+            `GitHub GET respondeu: ${getRes.status} | ${getErrorBody}`
+          );
+
+          throw new Error(
+            `Falha ao obter arquivo: ${getRes.status} ${getRes.statusText}`
+          );
+        }
         
         const fileData = await getRes.json();
         const fileSha = fileData.sha;
@@ -556,7 +569,18 @@
           body: putBody
         });
 
-        if (!putRes.ok) throw new Error(`Falha no Commit: ${putRes.status} ${putRes.statusText}`);
+        if (!putRes.ok) {
+          const putErrorBody = await putRes.text();
+
+          logTerminal(
+            "ERROR",
+            `GitHub PUT respondeu: ${putRes.status} | ${putErrorBody}`
+          );
+
+          throw new Error(
+            `Falha no Commit: ${putRes.status} ${putRes.statusText}`
+          );
+        }
 
         logTerminal("SUCCESS", "Commit enviado com sucesso ao GitHub!");
         logTerminal("SYSTEM", "O processo de build no Netlify deve iniciar em instantes. A página será atualizada assim que o build for concluído online.");
