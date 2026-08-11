@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abravanel Control - Master Node</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            abravanel: {
+              bg: '#020504',
+              panel: '#07100c',
+              card: '#0a1611',
+              green: '#00ff88',
+              greenHover: '#00cc6a',
+              text: '#ecfff5',
+              muted: '#658376',
+              border: 'rgba(0, 255, 136, 0.18)',
+              danger: '#ff4d6d',
+              warning: '#ffb703',
+              github: '#2b3137'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #020504;
+      color: #ecfff5;
+      font-family: 'Inter', sans-serif;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #020504; }
+    ::-webkit-scrollbar-thumb { background: #0a2619; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00ff88; }
+    
+    .glow-box {
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.07);
+    }
+    .glow-btn {
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.25);
+    }
+    .glow-btn:hover {
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.45);
+    }
+    .scanline {
+      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0, 255, 136, 0.03) 50%, rgba(0, 255, 136, 0.03));
+      background-size: 100% 4px;
+    }
+    .loader {
+      border: 2px solid rgba(0, 255, 136, 0.2);
+      border-top-color: #00ff88;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between scanline antialiased selection:bg-abravanel-green selection:text-black">
+
+  <div id="loginScreen" class="fixed inset-0 bg-[#020504] z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-[#07100c] border border-abravanel-border rounded-2xl p-8 glow-box relative overflow-hidden">
+      
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-abravanel-green to-transparent"></div>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-12 h-12 bg-abravanel-green text-[#00180d] font-black rounded-xl flex items-center justify-center text-2xl font-mono shadow-lg">
+          A
+        </div>
+        <div>
+          <h1 class="text-xl font-black text-white tracking-wider font-mono">ABRAVANEL CONTROL</h1>
+          <p class="text-xs text-abravanel-green font-mono">MASTER NODE // DEPLOYMENT</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-abravanel-muted mb-6">Autenticação necessária para acesso ao painel de injeção de patch remoto via GitHub API (Netlify Deploy).</p>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-mono uppercase text-abravanel-muted mb-1.5 tracking-wider">ID de Acesso</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-abravanel-green text-xs font-mono">#</span>
+            <input 
+              id="adminUser" type="text" required placeholder="ABRAVANEL" 
+              class="w-full bg-[#020605] border border-abravanel-border rounded-lg pl-8 pr-4 py-3 text-xs font-mono text-white focus:outline-none focus:border-abravanel-green transition-colors"
+            >
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-mono uppercase text-abravanel-muted mb-1.5 tracking-wider">Chave de Segurança</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-abravanel-green text-xs font-mono">KEY</span>
+            <input 
+              id="adminPass" type="password" required placeholder="••••" 
+              class="w-full bg-[#020605] border border-abravanel-border rounded-lg pl-12 pr-4 py-3 text-xs font-mono text-white focus:outline-none focus:border-abravanel-green transition-colors"
+            >
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-abravanel-green hover:bg-abravanel-greenHover text-[#00180d] font-black text-xs font-mono uppercase tracking-widest rounded-lg transition-all glow-btn active:scale-[0.99] mt-2">
+          INICIAR SESSÃO
+        </button>
+
+        <div id="loginError" class="text-abravanel-danger font-mono text-xs font-bold pt-2 text-center h-6"></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="adminDashboard" class="hidden flex-1 flex flex-col min-h-screen">
+    
+    <!-- Top Bar -->
+    <header class="bg-[#050e0a] border-b border-abravanel-border sticky top-0 z-40 px-4 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-abravanel-green text-[#00180d] rounded-lg flex items-center justify-center font-black font-mono text-lg shadow">A</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-mono font-black text-sm text-white tracking-wider">ABRAVANEL CONTROL</h1>
+            <span class="bg-abravanel-green/10 text-abravanel-green border border-abravanel-green/30 text-[9px] font-mono px-2 py-0.5 rounded uppercase">Master Node</span>
+          </div>
+          <p class="text-[10px] font-mono text-abravanel-muted">GitHub Live Deployment Interface</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="text-right font-mono hidden sm:block">
+          <div id="clockTime" class="text-abravanel-green text-xs font-bold">--:--:--</div>
+          <div id="clockDate" class="text-abravanel-muted text-[9px]">--/--/----</div>
+        </div>
+        <button onclick="handleLogout()" class="bg-[#0f1f17] hover:bg-red-950/40 text-white hover:text-abravanel-danger border border-abravanel-border rounded-lg px-4 py-2 text-xs font-mono transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-power-off"></i> LOGOUT
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-7xl mx-auto p-4 lg:p-8 space-y-6">
+      
+      <div class="bg-abravanel-panel border border-abravanel-border rounded-2xl overflow-hidden glow-box">
+        <div class="px-6 py-4 bg-black/40 border-b border-abravanel-border flex items-center gap-3">
+          <i class="fa-brands fa-github text-white text-lg"></i>
+          <h2 class="font-mono font-black text-sm text-white tracking-wider">CONFIGURAÇÃO GITHUB API & NETLIFY</h2>
+        </div>
+        
+        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-abravanel-card">
+          <div>
+            <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">GitHub Token (Classic/Fine-grained)</label>
+            <input id="gh_token" type="password" placeholder="ghp_..." class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:outline-none focus:border-abravanel-green" onchange="saveConfig()">
+          </div>
+          <div>
+            <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Repositório (owner/repo)</label>
+            <input id="gh_repo" placeholder="usuario/meu-site-xlo" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:outline-none focus:border-abravanel-green" onchange="saveConfig()">
+          </div>
+          <div>
+            <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Caminho do Arquivo (Ex: index.html)</label>
+            <input id="gh_path" placeholder="index.html" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:outline-none focus:border-abravanel-green" onchange="saveConfig()">
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-abravanel-panel border border-abravanel-border rounded-2xl overflow-hidden glow-box">
+        
+        <div class="px-6 py-4 bg-black/40 border-b border-abravanel-border flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="font-mono font-black text-sm text-white tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-code-merge text-abravanel-green"></i>
+              SELETOR DE MODIFICAÇÕES (PATCH)
+            </h2>
+            <p class="text-[11px] text-abravanel-muted font-mono mt-0.5 max-w-2xl">
+              Deixe os campos em branco para <strong class="text-white">manter os valores originais</strong>. Apenas os campos preenchidos substituirão o código na página live. O horário de publicação será atualizado automaticamente ao enviar.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="resetAllFields()" class="px-3 py-2 bg-[#0f1f17] hover:bg-[#152e22] text-abravanel-muted hover:text-white border border-abravanel-border rounded-lg text-xs font-mono transition-colors">
+              Limpar
+            </button>
+            <button id="btnDeploy" onclick="deployToGithub()" class="px-5 py-2 flex items-center gap-2 bg-abravanel-green hover:bg-abravanel-greenHover text-[#00180d] font-black font-mono text-xs uppercase tracking-wider rounded-lg transition-all glow-btn active:scale-95">
+              <span>INJETAR CÓDIGO (DEPLOY)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <div class="bg-abravanel-card border border-abravanel-border rounded-xl p-4 space-y-4">
+            <div class="flex justify-between items-center text-xs font-mono border-b border-abravanel-border pb-2">
+              <span class="text-white font-bold">PRODUTO & IMAGEM</span>
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Título do Anúncio</label>
+              <input id="patch_productTitle" placeholder="Ex: Saxofone Alto Yamaha..." class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Preço / Valor</label>
+              <input id="patch_productPrice" placeholder="Ex: R$ 5.000,00" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">URL da Imagem</label>
+              <input id="patch_productImage" placeholder="https://..." class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
+            </div>
+          </div>
+
+          <div class="bg-abravanel-card border border-abravanel-border rounded-xl p-4 space-y-4">
+            <div class="flex justify-between items-center text-xs font-mono border-b border-abravanel-border pb-2">
+              <span class="text-white font-bold">DADOS DA TRANSAÇÃO</span>
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Nome do Comprador</label>
+              <input id="patch_buyerName" placeholder="Ex: Marcelo Ribeiro S." class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Região de Entrega</label>
+              <input id="patch_deliveryRegion" placeholder="Ex: São Paulo, SP - CEP 01001" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">ID do Pedido (Exibe no Status)</label>
+              <input id="patch_breadcrumbOrderId" placeholder="Ex: 992014883" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
+            </div>
+          </div>
+
+          <div class="bg-abravanel-card border border-abravanel-border rounded-xl p-4 space-y-4 lg:col-span-1 md:col-span-2">
+            <div class="flex justify-between items-center text-xs font-mono border-b border-abravanel-border pb-2">
+              <span class="text-white font-bold">VENDEDOR & PAGAMENTO PIX</span>
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Nome do Vendedor</label>
+              <input id="patch_sidebarSellerName" placeholder="Ex: Carlos Eduardo" class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-abravanel-muted uppercase mb-1">Código Pix Copia e Cola</label>
+              <textarea id="patch_copyCode" placeholder="Ex: 00020126580014br.gov.bcb.pix..." class="w-full bg-[#020605] border border-abravanel-border rounded-lg p-2.5 text-xs text-white font-mono focus:border-abravanel-green outline-none resize-none h-20"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="bg-abravanel-panel border border-abravanel-border rounded-2xl overflow-hidden glow-box">
+        <div class="px-6 py-3 bg-black/40 border-b border-abravanel-border flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-abravanel-green animate-ping"></span>
+            <span class="font-mono text-xs text-white font-bold tracking-wider">DEPLOYMENT TERMINAL</span>
+          </div>
+          <button onclick="clearTerminal()" class="text-[10px] font-mono text-abravanel-muted hover:text-white transition-colors">
+            Limpar Console
+          </button>
+        </div>
+
+        <div id="terminalConsole" class="p-5 bg-[#010302] font-mono text-[11px] text-abravanel-muted h-56 overflow-y-auto space-y-2 leading-relaxed">
+          <div><strong class="text-abravanel-green">[SYSTEM]</strong> Abravanel Control Master Node initialized.</div>
+          <div><strong class="text-abravanel-green">[SYSTEM]</strong> Ready to intercept and patch GitHub live source code.</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#050e0a] border-t border-abravanel-border py-6 mt-auto text-center font-mono text-xs text-abravanel-muted">
+      <p>© 2026 Abravanel Control // GitHub Direct Modification Protocol.</p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-[#07100c] border border-abravanel-border text-white text-xs font-mono px-5 py-3.5 rounded-xl shadow-2xl translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+    <i class="fa-solid fa-satellite-dish text-abravanel-green text-base"></i>
+    <span id="toastMsg">Operação realizada com sucesso.</span>
+  </div>
+
+  <script>
+    const ADMIN_USER = "ABRAVANEL";
+    const ADMIN_PASSWORD = "5831";
+
+    window.addEventListener('DOMContentLoaded', () => {
+      startClock();
+      loadConfig();
+      if (sessionStorage.getItem("abravanel_auth") === "1") {
+        showDashboard();
+      }
+    });
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById("adminUser").value.trim();
+      const pass = document.getElementById("adminPass").value;
+
+      if (user === ADMIN_USER && pass === ADMIN_PASSWORD) {
+        sessionStorage.setItem("abravanel_auth", "1");
+        showDashboard();
+        logTerminal("AUTH", "Sessão verificada. Conectado ao Master Node.");
+      } else {
+        const err = document.getElementById("loginError");
+        err.textContent = "> ERRO: CREDENCIAIS INVÁLIDAS";
+        logTerminal("ERROR", "Tentativa de login falhou.");
+        setTimeout(() => { err.textContent = ""; }, 3000);
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem("abravanel_auth");
+      document.getElementById("adminDashboard").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+      document.getElementById("adminUser").value = "";
+      document.getElementById("adminPass").value = "";
+      logTerminal("AUTH", "Sessão finalizada.");
+    }
+
+    function showDashboard() {
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("adminDashboard").classList.remove("hidden");
+    }
+
+    function startClock() {
+      setInterval(() => {
+        const now = new Date();
+        const timeStr = new Intl.DateTimeFormat("pt-BR", {
+          timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+        }).format(now);
+        const dateStr = new Intl.DateTimeFormat("pt-BR", {
+          timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric"
+        }).format(now);
+
+        const tEl = document.getElementById("clockTime");
+        const dEl = document.getElementById("clockDate");
+        if (tEl) tEl.textContent = timeStr + " BRT";
+        if (dEl) dEl.textContent = dateStr;
+      }, 1000);
+    }
+
+    // Config Management
+    function saveConfig() {
+      const config = {
+        token: document.getElementById('gh_token').value.trim(),
+        repo: document.getElementById('gh_repo').value.trim(),
+        path: document.getElementById('gh_path').value.trim()
+      };
+      localStorage.setItem('abravanel_gh_config', JSON.stringify(config));
+      showToast("Configurações do GitHub salvas localmente.");
+    }
+
+    function loadConfig() {
+      const configStr = localStorage.getItem('abravanel_gh_config');
+      if (configStr) {
+        try {
+          const config = JSON.parse(configStr);
+          document.getElementById('gh_token').value = config.token || '';
+          document.getElementById('gh_repo').value = config.repo || '';
+          document.getElementById('gh_path').value = config.path || 'index.html';
+        } catch (e) {}
+      }
+    }
+
+    function resetAllFields() {
+      const fields = [
+        'patch_productTitle', 'patch_productPrice', 'patch_productImage', 
+        'patch_buyerName', 'patch_deliveryRegion', 'patch_breadcrumbOrderId', 
+        'patch_sidebarSellerName', 'patch_copyCode'
+      ];
+      fields.forEach(id => document.getElementById(id).value = "");
+      showToast("Campos do patcher limpos.");
+    }
+
+    // To handle Brazilian Portuguese characters correctly during Base64 encoding/decoding
+    function b64EncodeUnicode(str) {
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+      }));
+    }
+
+    function b64DecodeUnicode(str) {
+      return decodeURIComponent(atob(str).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    }
+
+    async function deployToGithub() {
+      const token = document.getElementById('gh_token').value.trim();
+      const repo = document.getElementById('gh_repo').value.trim();
+      const path = document.getElementById('gh_path').value.trim();
+
+      if (!token || !repo || !path) {
+        showToast("ERRO: Preencha as configurações do GitHub (Token, Repo, Caminho).");
+        logTerminal("ERROR", "Deploy abortado. Credenciais do GitHub ausentes.");
+        return;
+      }
+
+      // Collect filled fields
+      const inputPrefix = "patch_";
+      const inputs = document.querySelectorAll(`[id^="${inputPrefix}"]`);
+      const updates = {};
+      let updatesCount = 0;
+
+      inputs.forEach(input => {
+        const val = input.value.trim();
+        if (val !== "") {
+          const fieldName = input.id.replace(inputPrefix, "");
+          updates[fieldName] = val;
+          updatesCount++;
+        }
+      });
+
+      if (updatesCount === 0) {
+        showToast("Nenhum campo preenchido. Nada a atualizar.");
+        logTerminal("WARN", "Deploy abortado: Nenhum campo foi modificado pelo administrador.");
+        return;
+      }
+
+      const btn = document.getElementById('btnDeploy');
+      const originalBtnHTML = btn.innerHTML;
+      btn.innerHTML = `<div class="loader"></div> <span>PROCESSANDO API...</span>`;
+      btn.disabled = true;
+
+      logTerminal("API", `Conectando ao repositório [${repo}]...`);
+
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+      const headers = {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json"
+      };
+
+      try {
+        // 1. Fetch current file
+        logTerminal("API", `Baixando código fonte atual de /${path}...`);
+        const getRes = await fetch(apiUrl, { headers, method: "GET" });
+        if (!getRes.ok) throw new Error(`Falha ao obter arquivo: ${getRes.status} ${getRes.statusText}`);
+        
+        const fileData = await getRes.json();
+        const fileSha = fileData.sha;
+        const currentHtml = b64DecodeUnicode(fileData.content);
+
+        logTerminal("PARSE", "Código fonte obtido. Iniciando DOM Parser e injeção seletiva...");
+
+        // 2. Parse HTML and apply updates
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(currentHtml, "text/html");
+
+        let changesApplied = 0;
+        
+        for (const [key, value] of Object.entries(updates)) {
+          // Find all elements with data-admin-field matching the key
+          const elements = doc.querySelectorAll(`[data-admin-field="${key}"]`);
+          if (elements.length > 0) {
+            elements.forEach(el => {
+              if (el.tagName.toLowerCase() === 'img') {
+                el.src = value;
+              } else {
+                el.textContent = value;
+              }
+              changesApplied++;
+            });
+            logTerminal("INJECT", `[${key}] injetado com sucesso em ${elements.length} elemento(s).`);
+          } else {
+            logTerminal("WARN", `Campo [${key}] ignorado: seletor não encontrado no HTML de destino.`);
+          }
+        }
+
+        // 3. Update the publish timestamp automatically
+        const timeElements = doc.querySelectorAll(`[data-admin-field="publishTime"]`);
+        if (timeElements.length > 0) {
+          const now = new Date();
+          const timeStr = new Intl.DateTimeFormat("pt-BR", {
+            timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hour12: false
+          }).format(now);
+          timeElements.forEach(el => el.textContent = `Hoje, ${timeStr}`);
+          logTerminal("INJECT", `Horário de publicação atualizado para ${timeStr}.`);
+          changesApplied++;
+        }
+
+        if (changesApplied === 0) {
+          throw new Error("Nenhuma alteração pôde ser aplicada. Verifique se a página de destino possui os atributos data-admin-field corretos.");
+        }
+
+        // 4. Serialize HTML back to string (Add doctype as DOMParser outerHTML omits it)
+        const updatedHtml = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
+        const updatedBase64 = b64EncodeUnicode(updatedHtml);
+
+        logTerminal("API", "Preparando commit para o GitHub...");
+
+        // 5. Commit changes back to GitHub
+        const commitMsg = `Abravanel Control: Deploy Automático via Painel Master (${updatesCount} modificações)`;
+        
+        const putBody = JSON.stringify({
+          message: commitMsg,
+          content: updatedBase64,
+          sha: fileSha
+        });
+
+        const putRes = await fetch(apiUrl, {
+          method: "PUT",
+          headers: headers,
+          body: putBody
+        });
+
+        if (!putRes.ok) throw new Error(`Falha no Commit: ${putRes.status} ${putRes.statusText}`);
+
+        logTerminal("SUCCESS", "Commit enviado com sucesso ao GitHub!");
+        logTerminal("SYSTEM", "O processo de build no Netlify deve iniciar em instantes. A página será atualizada assim que o build for concluído online.");
+        showToast("Deploy disparado com sucesso no GitHub!");
+        resetAllFields();
+
+      } catch (error) {
+        logTerminal("ERROR", error.message);
+        showToast("Ocorreu um erro no Deploy. Verifique o terminal.");
+      } finally {
+        btn.innerHTML = originalBtnHTML;
+        btn.disabled = false;
+      }
+    }
+
+    // Console System
+    function logTerminal(type, msg) {
+      const consoleEl = document.getElementById("terminalConsole");
+      if (!consoleEl) return;
+      
+      let typeColor = "text-abravanel-green";
+      if(type === "ERROR") typeColor = "text-abravanel-danger";
+      if(type === "WARN") typeColor = "text-abravanel-warning";
+      if(type === "SUCCESS") typeColor = "text-[#00ff88] font-bold";
+
+      const time = new Date().toLocaleTimeString('pt-BR', {hour12:false});
+
+      const line = document.createElement("div");
+      line.innerHTML = `<span class="text-abravanel-muted">[${time}]</span> <strong class="${typeColor}">[${type}]</strong> ${msg}`;
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function clearTerminal() {
+      const consoleEl = document.getElementById("terminalConsole");
+      if (consoleEl) {
+        consoleEl.innerHTML = `<div><strong class="text-abravanel-green">[SYSTEM]</strong> Terminal console limpo pelo administrador.</div>`;
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
